@@ -6,8 +6,9 @@ import { compare } from "bcryptjs";
 const users = [
   {
     id: "1",
-    name: "Admin",
+    name: "Đoàn Lê Tuấn Thành",
     email: "admin@medical.com",
+    avatar: "https://github.com/shadcn.png",
     // This is a hashed version of "password"
     password: "$2b$10$z.3531LeXCY1WEq3dzoHe.alSCdlAhVqagk04vEMF4waNtTbW0Mh6",
   },

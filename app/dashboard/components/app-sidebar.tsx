@@ -1,10 +1,7 @@
+"use client"
+
 import { Calendar, Home, Inbox, Search, Settings, User2, ChevronUp, MessageCircleMore } from "lucide-react"
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem
-} from "@/components/ui/dropdown-menu"
+import { useChat } from "@/lib/chat-context"
 
 import {
   Sidebar,
@@ -40,22 +37,23 @@ import {
 const items = [
   {
     title: "Trang chủ",
-    url: "#",
+    url: "/dashboard",
     icon: Home,
   },
   {
     title: "Đoạn chat mới",
-    url: "#",
+    url: "/dashboard/new-chat",
     icon: MessageCircleMore,
+    action: "new-chat"
   },
   {
     title: "Tìm kiếm đoạn chat",
-    url: "#",
+    url: "/dashboard/search",
     icon: Search,
   },
   {
     title: "Cài đặt",
-    url: "#",
+    url: "/dashboard/settings",
     icon: Settings,
   },
 ]
@@ -262,9 +260,18 @@ const data = {
 
 
 
-export function AppSidebar() {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  // Move the hook call to the top level of the component
+  const { createThread } = useChat();
+
+  // Handler function defined at the component level
+  const handleNewChat = (e: React.MouseEvent) => {
+    e.preventDefault();
+    createThread("Cuộc trò chuyện mới");
+  };
+  
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader> 
@@ -276,17 +283,27 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
+                    {item.action === 'new-chat' ? (
+                      <a 
+                        href={item.url} 
+                        onClick={handleNewChat}
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    ) : (
+                      <a href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <NavThreads threads={data.threads} />
+        <NavThreads />
         
       </SidebarContent>
       <SidebarFooter>

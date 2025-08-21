@@ -38,8 +38,8 @@ export default function Login() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
         <div className="mb-6 text-center">
-          <h1 className="text-3xl font-bold text-gray-800">Medical Chatbot</h1>
-          <p className="mt-2 text-gray-600">Sign in to your account</p>
+          <h1 className="text-3xl font-bold text-gray-800">RHM Chatbot</h1>
+          <p className="mt-2 text-gray-600">Đăng nhập vào tài khoản của bạn</p>
         </div>
 
         {error && (
@@ -66,7 +66,7 @@ export default function Login() {
 
           <div className="mb-6">
             <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
-              Password
+              Mật khẩu
             </label>
             <input
               id="password"
@@ -84,7 +84,7 @@ export default function Login() {
             disabled={loading}
             className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-blue-300"
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>
 

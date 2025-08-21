@@ -7,6 +7,9 @@ import {
   Trash2,
   type LucideIcon,
 } from "lucide-react"
+import { format } from "date-fns"
+import { Thread } from "@/types/chat"
+import { useChat } from "@/lib/chat-context"
 
 import {
   DropdownMenu,
@@ -25,26 +28,37 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-export function NavThreads({
-  threads,
-}: {
-  threads: {
-    name: string
-    url: string
-  }[]
-}) {
-  const { isMobile } = useSidebar()
+export function NavThreads() {
+  const { isMobile } = useSidebar();
+  const { threads, selectThread, deleteThread, activeThreadId, createThread } = useChat();
+  
+  // Function to handle sharing thread
+  const handleShareThread = (threadId: string) => {
+    // In a real app, implement sharing functionality
+    // For now, we'll just copy a mock URL to clipboard
+    const shareUrl = `${window.location.origin}/share/${threadId}`;
+    navigator.clipboard.writeText(shareUrl);
+    alert(`Link đã được sao chép: ${shareUrl}`);
+  };
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Đoạn Chat</SidebarGroupLabel>
       <SidebarMenu>
-        {threads.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
-                
-                <span>{item.name}</span>
+        {threads.map((thread) => (
+          <SidebarMenuItem key={thread.id}>
+            <SidebarMenuButton 
+              asChild 
+              isActive={activeThreadId === thread.id}
+            >
+              <a href={`/dashboard/thread/${thread.id}`} onClick={(e) => {
+                e.preventDefault();
+                selectThread(thread.id);
+              }}>
+                <span className="truncate">{thread.name}</span>
+                <span className="text-xs text-sidebar-foreground/70 ml-auto">
+                  {format(new Date(thread.updatedAt), 'dd/MM')}
+                </span>
               </a>
             </SidebarMenuButton>
             <DropdownMenu>
@@ -59,16 +73,16 @@ export function NavThreads({
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => selectThread(thread.id)}>
                   <Folder className="text-muted-foreground" />
                   <span>Xem đoạn chat</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleShareThread(thread.id)}>
                   <Forward className="text-muted-foreground" />
                   <span>Chia sẻ đoạn chat</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => deleteThread(thread.id)}>
                   <Trash2 className="text-muted-foreground" />
                   <span>Xoá đoạn chat</span>
                 </DropdownMenuItem>
@@ -77,9 +91,12 @@ export function NavThreads({
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
+          <SidebarMenuButton 
+            className="text-sidebar-foreground/70"
+            onClick={() => createThread("Cuộc trò chuyện mới")}
+          >
             <MoreHorizontal className="text-sidebar-foreground/70" />
-            <span>More</span>
+            <span>Xem thêm</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

@@ -12,14 +12,14 @@ interface HeaderProps {
 export function Header({ username, handleSignOut }: HeaderProps) {
   return (
     <header className="sticky top-0 bg-white p-4 shadow z-10">
-      <div className="mx-auto flex max-w-6xl items-center justify-between">
+      <div className="flex items-center justify-between w-full">
         <div className="flex items-center">
           <SidebarTrigger className="mr-2" />
-          <h1 className="text-xl font-bold text-gray-800">Medical Chatbot</h1>
+          <h1 className="text-xl font-bold text-gray-800">RHM Chatbot</h1>
         </div>
         <div className="flex items-center space-x-4">
           <span className="text-sm text-gray-600">
-            Welcome, {username || "User"}
+            Xin chào, {username || "User"}
           </span>
           <button
             onClick={handleSignOut}

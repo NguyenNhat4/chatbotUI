@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/app/dashboard/components/app-sidebar";
+import { ChatProvider } from "@/lib/chat-context";
 export default function DashboardLayout({
   children,
 }: {
@@ -26,7 +27,10 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <AppSidebar />
-      {children}
-    </SidebarProvider>)
+      <ChatProvider>
+        <AppSidebar />
+        {children}
+      </ChatProvider>
+    </SidebarProvider>
+  )
 }
