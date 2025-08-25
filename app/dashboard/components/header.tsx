@@ -4,6 +4,7 @@ import React from "react";
 import { signOut } from "next-auth/react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ModeToggle } from "@/app/components/mode-toggle";
 
 interface HeaderProps {
   username: string;
@@ -21,22 +22,23 @@ export function Header({ username, handleSignOut }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 bg-white p-4 shadow z-10">
+    <header className="sticky top-0 bg-background p-4 shadow z-10 border-b">
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center flex-shrink-0">
           <SidebarTrigger className="mr-2" />
-          <h1 className="text-xl font-bold text-gray-800 whitespace-nowrap">RHM Chatbot</h1>
+          <h1 className="text-xl font-bold whitespace-nowrap">RHM Chatbot</h1>
         </div>
         <div className="flex items-center space-x-2 md:space-x-4 ml-2">
-          <span className="text-sm text-gray-600 whitespace-nowrap">
+          <span className="text-sm text-muted-foreground whitespace-nowrap">
             {isMobile ? `Hello, ${getLastName()}` : `Xin chào, ${username || "User"}`}
           </span>
           <button
             onClick={handleSignOut}
-            className="rounded bg-gray-200 px-3 py-1 text-sm text-gray-700 hover:bg-gray-300 whitespace-nowrap"
+            className="rounded bg-secondary px-3 py-1 text-sm hover:bg-secondary/80 whitespace-nowrap"
           >
             Đăng xuất
           </button>
+          <ModeToggle />
         </div>
       </div>
     </header>

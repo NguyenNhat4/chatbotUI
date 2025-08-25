@@ -210,7 +210,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Image src={LogoKhoaRHM} alt="Logo Khoa RHM" className="size-8" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">ĐH Y Dược</span>
+                  <span className="font-medium">ĐH Y Dược Tp Hồ Chí Minh</span>
                   <span className="">Khoa Răng Hàm Mặt</span>
                 </div>
               </a>

@@ -20,7 +20,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
   }, [messages]);
 
   return (
-    <div className="mb-4 flex-1 overflow-y-auto rounded-lg bg-white p-4">
+    <div className="mb-4 flex-1 overflow-y-auto rounded-lg bg-background p-4">
       <div className="space-y-4">
         {messages.map((message) => (
           <div
@@ -32,15 +32,15 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
             <div
               className={`max-w-[80%] rounded-lg px-4 py-2 ${
                 message.role === "user"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-100 text-gray-800"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground"
               }`}
             >
               <p>{message.content}</p>
               <p className={`text-xs mt-1 ${
                 message.role === "user"
-                  ? "text-blue-100"
-                  : "text-gray-500"
+                  ? "text-primary-foreground/70"
+                  : "text-secondary-foreground/70"
               }`}>
                 {format(new Date(message.timestamp), 'HH:mm')}
               </p>
@@ -49,7 +49,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-lg bg-gray-100 px-4 py-2 text-gray-800">
+            <div className="max-w-[80%] rounded-lg bg-secondary px-4 py-2 text-secondary-foreground">
               <p>Đang suy nghĩ...</p>
             </div>
           </div>
