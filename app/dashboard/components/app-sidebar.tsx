@@ -2,6 +2,8 @@
 
 import { Calendar, Home, Inbox, Search, Settings, User2, ChevronUp, MessageCircleMore } from "lucide-react"
 import { useChat } from "@/lib/chat-context"
+import Image from "next/image"
+import LogoKhoaRHM from "@/assets/logo-khoa-rhm.png"
 
 import {
   Sidebar,
@@ -15,7 +17,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { TeamSwitcher } from "@/app/dashboard/components/team-switcher";
 import { NavThreads } from "@/app/dashboard/components/nav-threads";
 import { NavUser } from "@/app/dashboard/components/nav-user";
 
@@ -25,7 +26,6 @@ import {
   Bot,
   Command,
   Frame,
-  GalleryVerticalEnd,
   Map,
   PieChart,
   Settings2,
@@ -61,20 +61,20 @@ const items = [
 // This is sample data.
 const data = {
   user: {
-    name: "Đoàn Lê Tuấn Thành",
-    email: "thanhdlt@example.com",
+    name: "Tôn Thất Tùng",
+    email: "tungtt@example.com",
     avatar: "https://github.com/shadcn.png", // Using a placeholder image from GitHub
   },
   teams: [
     {
       name: "Nha sĩ",
-      logo: GalleryVerticalEnd,
-      plan: "Caregiver",
+      logo: "logo",
+      plan: "Dentist",
     },
     {
       name: "Bác sĩ",
       logo: AudioWaveform,
-      plan: "Caregiver",
+      plan: "Dentist",
     },
     {
       name: "Bệnh nhân",
@@ -182,78 +182,7 @@ const data = {
       name: "Travel",
       url: "#",
     },
-    {
-      name: "Design Engineering",
-      url: "#",
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-    },
-    {
-      name: "Travel",
-      url: "#",
-    },
-    {
-      name: "Design Engineering",
-      url: "#",
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-    },
-    {
-      name: "Travel",
-      url: "#",
-    },
-    {
-      name: "Design Engineering",
-      url: "#",
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-    },
-    {
-      name: "Travel",
-      url: "#",
-    },
-    {
-      name: "Design Engineering",
-      url: "#",
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-    },
-    {
-      name: "Travel",
-      url: "#",
-    },
-    {
-      name: "Design Engineering",
-      url: "#",
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-    },
-    {
-      name: "Travel",
-      url: "#",
-    },
-    {
-      name: "Design Engineering",
-      url: "#",
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-    },
-    {
-      name: "Travel",
-      url: "#",
-    },
+    
     
   ],
 }
@@ -273,11 +202,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <a href="#">
+                <div className=" text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <Image src={LogoKhoaRHM} alt="Logo Khoa RHM" className="size-8" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none">
+                  <span className="font-medium">ĐH Y Dược</span>
+                  <span className="">Khoa Răng Hàm Mặt</span>
+                </div>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader> 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Điều hướng</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -307,33 +250,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         
       </SidebarContent>
       <SidebarFooter>
-          {/* <SidebarMenu>
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton>
-                    <User2 /> Username
-                    <ChevronUp className="ml-auto" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  side="top"
-                  className="w-[--radix-popper-anchor-width]"
-                  align="end"
-                >
-                  <DropdownMenuItem>
-                    <span>Account</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Billing</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span>Sign out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          </SidebarMenu> */}
           <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>

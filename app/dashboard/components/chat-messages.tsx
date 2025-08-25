@@ -20,7 +20,7 @@ export function ChatMessages({ messages, isLoading }: ChatMessagesProps) {
   }, [messages]);
 
   return (
-    <div className="mb-4 flex-1 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow">
+    <div className="mb-4 flex-1 overflow-y-auto rounded-lg bg-white p-4">
       <div className="space-y-4">
         {messages.map((message) => (
           <div

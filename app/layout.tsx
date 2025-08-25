@@ -6,7 +6,7 @@ import AuthProvider from "./components/AuthProvider";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Medical Chatbot",
+  title: "RHM Chatbot",
   description: "A medical chatbot built with Next.js",
 };
 

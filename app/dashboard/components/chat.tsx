@@ -33,7 +33,7 @@ export function Chat() {
   }
 
   return (
-    <div className="bg-gray-50 flex-1">
+    <div className="flex-1">
       <main className="mx-auto flex flex-col h-[calc(100vh-4rem)] max-w-4xl p-4">
         {activeThread ? (
           <>
