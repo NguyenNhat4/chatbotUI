@@ -38,7 +38,7 @@ export function Header({ username, handleSignOut }: HeaderProps) {
           >
             Đăng xuất
           </button>
-          <ModeToggle />
+          {/* <ModeToggle /> */}
         </div>
       </div>
     </header>

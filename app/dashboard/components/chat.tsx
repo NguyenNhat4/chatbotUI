@@ -34,7 +34,7 @@ export function Chat() {
 
   return (
     <div className="flex-1">
-      <main className="mx-auto flex flex-col h-[calc(100vh-5rem)] max-w-4xl p-4">
+      <main className="mx-auto flex flex-col h-[calc(100vh-4rem)] max-w-4xl p-4 relative">
         {activeThread ? (
           <>
             {/* Chat messages component */}
@@ -43,13 +43,15 @@ export function Chat() {
               isLoading={isLoading} 
             />
 
-            {/* Chat input component */}
-            <ChatInput 
-              inputMessage={inputMessage}
-              setInputMessage={setInputMessage}
-              handleSendMessage={handleSendMessage}
-              isLoading={isLoading}
-            />
+            {/* Chat input component - positioned at the bottom */}
+            <div className="sticky bottom-0 z-10">
+              <ChatInput 
+                inputMessage={inputMessage}
+                setInputMessage={setInputMessage}
+                handleSendMessage={handleSendMessage}
+                isLoading={isLoading}
+              />
+            </div>
           </>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center">

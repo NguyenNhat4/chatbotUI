@@ -35,11 +35,11 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 px-4 sm:px-6">
+      <div className="w-full max-w-md rounded-lg bg-white p-6 sm:p-8 shadow-lg">
         <div className="mb-6 text-center">
-          <h1 className="text-3xl font-bold text-gray-800">RHM Chatbot</h1>
-          <p className="mt-2 text-gray-600">Đăng nhập vào tài khoản của bạn</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">RHM Chatbot</h1>
+          <p className="mt-2 text-sm sm:text-base text-gray-600">Đăng nhập vào tài khoản của bạn</p>
         </div>
 
         {error && (
@@ -58,7 +58,7 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               placeholder="you@example.com"
               required
             />
@@ -73,7 +73,7 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               placeholder="••••••••"
               required
             />
@@ -82,13 +82,13 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-blue-300"
+            className="w-full rounded-md bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-blue-300"
           >
             {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-xs sm:text-sm text-gray-600">
           Demo credentials: admin@medical.com / password
         </p>
       </div>

@@ -2,7 +2,8 @@
 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import React from "react";
+import { Send } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
 
 
 interface ChatInputProps {
@@ -18,30 +19,62 @@ export function ChatInput({
   handleSendMessage, 
   isLoading 
 }: ChatInputProps) {
+  const [deepResearch, setDeepResearch] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Focus the textarea when the component mounts or after sending a message
+  useEffect(() => {
+    if (textareaRef.current && !isLoading) {
+      textareaRef.current.focus();
+    }
+  }, [isLoading]);
+
+  // Handle key press events (Enter to submit)
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (inputMessage.trim() && !isLoading) {
+        handleSendMessage(e);
+      }
+    }
+  };
+
   return (
-    <form onSubmit={handleSendMessage} className="space-y-2">
-      <div className="flex space-x-2">
-        <input
-          type="text"
+    <form onSubmit={handleSendMessage}>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 px-3 pt-3 pb-2">
+        <textarea
+          ref={textareaRef}
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
+          onKeyDown={handleKeyPress}
           placeholder="Hỏi bất cứ điều gì..."
-          className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"
+          className="w-full h-12 focus:outline-none focus:ring-0 resize-none border-0"
           disabled={isLoading}
         />
-        <button
-          type="submit"
-          className="rounded-lg bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-600 disabled:bg-blue-300"
-          disabled={isLoading || !inputMessage.trim()}
-        >
-          Gửi
-        </button>
+        <div className="flex items-center justify-between mt-0">
+          <div className="flex items-center gap-2">
+            <Switch
+              id="deep-research"
+              checked={deepResearch}
+              onCheckedChange={setDeepResearch}
+              className="data-[state=checked]:bg-blue-600"
+            />
+            <Label htmlFor="deep-research" className="text-gray-600 font-medium cursor-pointer text-sm">
+              Deep Research
+            </Label>
+          </div>
+
+          <button
+            type="submit"
+            className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-500 text-white hover:bg-blue-600 disabled:bg-blue-300 transition-colors"
+            disabled={isLoading || !inputMessage.trim()}
+            aria-label="Send message"
+          >
+            <Send className="w-5 h-5" />
+          </button>
+        </div>
       </div>
       
-      <div className="flex items-center ml-1">
-        <Switch id="deep-research" className="h-[18px]" />
-        <Label htmlFor="deep-research" className="ml-2 text-xs text-gray-600 font-medium">Deep Research</Label>
-      </div>
     </form>
   );
 }

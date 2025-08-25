@@ -4,6 +4,7 @@ import { Calendar, Home, Inbox, Search, Settings, User2, ChevronUp, MessageCircl
 import { useChat } from "@/lib/chat-context"
 import Image from "next/image"
 import LogoKhoaRHM from "@/assets/logo-khoa-rhm.png"
+import HIAILogo from "@/assets/hiai-logo.png"
 
 import {
   Sidebar,
@@ -243,13 +244,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
         <NavThreads />
         
       </SidebarContent>
+
       <SidebarFooter>
+          <div className="flex justify-center items-center mt-2 text-xs text-sidebar-foreground/50 font-light italic group-data-[collapsible=icon]:hidden">
+            <div className="h-4 mr-1 relative">
+              <Image 
+                src={HIAILogo} 
+                alt="HIAI Logo" 
+                className="object-contain" 
+                width={24} 
+                height={16} 
+              />
+            </div>
+            <span>Powered by HiAI Vietnam</span>
+          </div>
           <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
