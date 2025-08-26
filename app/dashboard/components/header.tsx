@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { signOut } from "next-auth/react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ModeToggle } from "@/app/components/mode-toggle";

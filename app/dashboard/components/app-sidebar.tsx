@@ -265,7 +265,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </div>
             <span>Powered by HiAI Vietnam</span>
           </div>
-          <NavUser user={data.user} />
+          <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

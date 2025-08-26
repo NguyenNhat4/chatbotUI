@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useChat } from "@/lib/chat-context";
+import { useAuth } from "@/lib/auth-context";
 import { Chat } from "@/app/dashboard/components/chat";
 import { Header } from "@/app/dashboard/components/header";
-import { signOut } from "next-auth/react";
 
 export default function ThreadPage({ params }: { params: { threadId: string } }) {
   const { threadId } = params;
@@ -17,11 +17,14 @@ export default function ThreadPage({ params }: { params: { threadId: string } })
     }
   }, [threadId, selectThread]);
 
+  const { user, logout } = useAuth();
+  const username = user?.email?.split('@')[0] || "User";
+
   return (
     <div className="flex flex-col h-screen">
       <Header 
-        username="User" 
-        handleSignOut={() => signOut()} 
+        username={username} 
+        handleSignOut={() => logout()} 
       />
       <Chat />
     </div>

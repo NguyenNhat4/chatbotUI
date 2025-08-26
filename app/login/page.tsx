@@ -1,32 +1,36 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { signIn } from "next-auth/react";
+import { FormEvent, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
 
 export default function Login() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { login, user } = useAuth();
+  const [email, setEmail] = useState("user1@example.com");
+  const [password, setPassword] = useState("password");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // If user is already logged in, redirect to dashboard
+  useEffect(() => {
+    if (user) {
+      router.push("/dashboard");
+    }
+  }, [user, router]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const result = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
+    const result = await login(email, password);
 
     setLoading(false);
 
-    if (result?.error) {
-      setError("Invalid email or password");
+    if (!result.success) {
+      setError(result.error || "Invalid email or password");
       return;
     }
 
@@ -89,7 +93,7 @@ export default function Login() {
         </form>
 
         <p className="mt-4 text-center text-xs sm:text-sm text-gray-600">
-          Demo credentials: admin@medical.com / password
+          Demo credentials: user1@example.com / password
         </p>
       </div>
     </div>

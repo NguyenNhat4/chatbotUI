@@ -1,24 +1,31 @@
-import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default withAuth(
-  // Function that will be executed on protected routes
-  function middleware(req) {
-    // You can add additional logic here if needed
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      // Only run this middleware on the dashboard route
-      authorized({ req, token }) {
-        // If there's a token, the user is authenticated
-        return !!token;
-      },
-    },
+export function middleware(request: NextRequest) {
+  // Get the path of the request
+  const path = request.nextUrl.pathname;
+
+  // Define the public paths that don't require authentication
+  const isPublicPath = path === "/login" || path === "/";
+
+  // Get the user cookie
+  const userCookie = request.cookies.get("user")?.value;
+  
+  // If the path is public and the user is logged in, redirect to dashboard
+  if (isPublicPath && userCookie) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-);
+
+  // If the path is protected and the user is not logged in, redirect to login
+  if (!isPublicPath && !userCookie) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // Otherwise, continue with the request
+  return NextResponse.next();
+}
 
 // Define the routes that should be protected by the middleware
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/login", "/"],
 };
