@@ -18,7 +18,7 @@ export function Chat() {
   const [inputMessage, setInputMessage] = useState("");
 
   // Function to handle sending a message
-  async function handleSendMessage(e: React.FormEvent) {
+  async function handleSendMessage(e: React.FormEvent, selectedRole?: string) {
     e.preventDefault();
     
     if (!inputMessage.trim() || isLoading) return;
@@ -28,13 +28,13 @@ export function Chat() {
       createThread(inputMessage.trim().substring(0, 30) + (inputMessage.length > 30 ? '...' : ''));
     }
     
-    sendMessage(inputMessage);
+    sendMessage(inputMessage, selectedRole);
     setInputMessage("");
   }
 
   return (
     <div className="flex-1">
-      <main className="mx-auto flex flex-col h-[calc(100vh-4rem)] max-w-4xl p-4 relative">
+      <main className="mx-auto flex flex-col h-[calc(100vh-4.5rem)] max-w-4xl p-4 relative">
         {activeThread ? (
           <>
             {/* Chat messages component */}
