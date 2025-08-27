@@ -6,7 +6,8 @@ import { useState, useEffect } from "react";
 // Function to fetch roles from the API
 export async function fetchRoles(): Promise<RolesResponse> {
   try {
-    const response = await fetch("https://denti-chatbot.hiaivn.com/api/roles");
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const response = await fetch(`${API_URL}/api/roles`);
     if (!response.ok) {
       throw new Error(`Error fetching roles: ${response.status}`);
     }

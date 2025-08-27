@@ -2,17 +2,19 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Message, Thread } from "@/types/chat";
-import { v4 as uuidv4 } from "uuid"; // You'll need to install this package
+import { v4 as uuidv4 } from "uuid";
+import chatApi from "./chat-api";
+import { useAuth } from "./auth-context";
 
 interface ChatContextType {
   threads: Thread[];
   activeThreadId: string | null;
-  createThread: (name: string) => string; // Returns the thread ID
-  deleteThread: (threadId: string) => void;
-  sendMessage: (content: string, role?: string) => void;
-  sendSuggestion: (suggestion: string) => void;
-  selectThread: (threadId: string) => void;
-  renameThread: (threadId: string, newName: string) => void;
+  createThread: (name: string) => Promise<string>; // Returns the thread ID as a Promise
+  deleteThread: (threadId: string) => Promise<void>;
+  sendMessage: (content: string, role?: string) => Promise<void>;
+  sendSuggestion: (suggestion: string) => Promise<void>;
+  selectThread: (threadId: string) => Promise<void>;
+  renameThread: (threadId: string, newName: string) => Promise<void>;
   activeThread: Thread | null;
   isLoading: boolean;
 }
@@ -23,83 +25,146 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const { user } = useAuth();
 
-  // On first load, try to get threads from local storage
+  // On first load, fetch threads from API
   useEffect(() => {
-    const savedThreads = localStorage.getItem("chatThreads");
-    if (savedThreads) {
+    const fetchThreads = async () => {
       try {
-        const parsedThreads = JSON.parse(savedThreads, (key, value) => {
-          if (key === "createdAt" || key === "updatedAt" || key === "timestamp") {
-            return new Date(value);
-          }
-          return value;
-        });
-        setThreads(parsedThreads);
+        const threadsData = await chatApi.getThreads();
+        
+        // Convert dates
+        const processedThreads = threadsData.map((thread: any) => ({
+          id: thread.id,
+          name: thread.name,
+          createdAt: new Date(thread.createdAt),
+          updatedAt: new Date(thread.updatedAt),
+          messages: [], // We'll load messages when selecting a thread
+          userId: user?.id?.toString() || "guest-user" // Get user ID from auth context
+        }));
+        
+        setThreads(processedThreads);
         
         // Set the most recent thread as active if it exists
-        if (parsedThreads.length > 0) {
-          setActiveThreadId(parsedThreads[0].id);
+        if (processedThreads.length > 0) {
+          setActiveThreadId(processedThreads[0].id);
+          
+          // Immediately load messages for the most recent thread
+          const mostRecentThreadId = processedThreads[0].id;
+          const threadData = await chatApi.getThread(mostRecentThreadId);
+          
+          // Process messages
+          const messages = threadData.messages.map((msg: any) => ({
+            id: msg.id,
+            role: msg.role,
+            content: msg.content,
+            timestamp: new Date(msg.timestamp),
+            apiRole: msg.apiRole,
+            suggestions: msg.suggestions,
+            summary: msg.summary,
+            needClarify: msg.needClarify,
+            inputType: msg.inputType
+          }));
+          
+          // Update the thread with messages
+          setThreads(prevThreads => 
+            prevThreads.map(thread => 
+              thread.id === mostRecentThreadId 
+                ? { ...thread, messages } 
+                : thread
+            )
+          );
         }
+        
+        setIsInitialized(true);
       } catch (error) {
         console.error("Failed to load chat threads:", error);
+        setIsInitialized(true);
       }
-    }
+    };
+    
+    fetchThreads();
   }, []);
-
-  // Save threads to local storage whenever they change
-  useEffect(() => {
-    if (threads.length > 0) {
-      localStorage.setItem("chatThreads", JSON.stringify(threads));
-    }
-  }, [threads]);
 
   const activeThread = activeThreadId 
     ? threads.find(thread => thread.id === activeThreadId) || null
     : null;
 
-  const createThread = (name: string) => {
-    const newThread: Thread = {
-      id: uuidv4(),
-      name,
-      messages: [{
-        id: uuidv4(),
-        role: "bot",
-        content: "Xin chào! Tôi là phụ tá AI thông minh của bạn đây. Xem tôi có thể giúp gì được nào?",
-        timestamp: new Date()
-      }],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      userId: "current-user-id" // In a real app, get this from authentication
-    };
-
-    setThreads(prevThreads => [newThread, ...prevThreads]);
-    setActiveThreadId(newThread.id);
-    return newThread.id;
+  const createThread = async (name: string) => {
+    try {
+      setIsLoading(true);
+      
+      // Create thread via API
+      const response = await chatApi.createThread(name);
+      
+      // Create thread object with initial welcome message
+      const newThread: Thread = {
+        id: response.id,
+        name,
+        messages: [{
+          id: uuidv4(), // This will be replaced when we load the actual thread
+          role: "bot",
+          content: "Xin chào! Tôi là phụ tá AI thông minh của bạn đây. Xem tôi có thể giúp gì được nào?",
+          timestamp: new Date()
+        }],
+        createdAt: new Date(response.createdAt),
+        updatedAt: new Date(response.updatedAt),
+        userId: user?.id?.toString() || "guest-user" // Get user ID from auth context
+      };
+      
+      // Update local state
+      setThreads(prevThreads => [newThread, ...prevThreads]);
+      
+      // Load the complete thread with messages
+      await selectThread(newThread.id);
+      
+      return newThread.id;
+    } catch (error) {
+      console.error("Error creating thread:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const deleteThread = (threadId: string) => {
-    setThreads(prevThreads => prevThreads.filter(thread => thread.id !== threadId));
-    
-    if (activeThreadId === threadId) {
-      // Set the next thread as active, or null if no threads left
-      setActiveThreadId(threads.length > 1 ? threads[0].id : null);
+  const deleteThread = async (threadId: string) => {
+    try {
+      // Delete on API
+      await chatApi.deleteThread(threadId);
+      
+      // Update local state
+      setThreads(prevThreads => prevThreads.filter(thread => thread.id !== threadId));
+      
+      if (activeThreadId === threadId) {
+        // Set the next thread as active, or null if no threads left
+        const remainingThreads = threads.filter(t => t.id !== threadId);
+        if (remainingThreads.length > 0) {
+          await selectThread(remainingThreads[0].id);
+        } else {
+          setActiveThreadId(null);
+        }
+      }
+    } catch (error) {
+      console.error("Error deleting thread:", error);
+      throw error;
     }
   };
 
   const sendMessage = async (content: string, role?: string) => {
     if (!activeThreadId || !content.trim() || isLoading) return;
 
-    const userMessageId = uuidv4();
+    // Create temporary user message for optimistic UI update
+    const tempUserMessageId = uuidv4();
     const userMessage: Message = {
-      id: userMessageId,
+      id: tempUserMessageId,
       role: "user",
       content: content.trim(),
       timestamp: new Date(),
       apiRole: role // Include the role in the message
     };
 
-    // Update the thread with the user message
+    // Update the thread with the user message (optimistic update)
     setThreads(prevThreads => 
       prevThreads.map(thread => 
         thread.id === activeThreadId 
@@ -115,26 +180,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      // Call the dental chatbot API
-      const response = await fetch('https://denti-chatbot.hiaivn.com/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: content.trim(),
-          role: role || 'default',
-          session_id: activeThreadId // Using thread ID as session ID
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      // Use the chat API client to send the message
+      const data = await chatApi.sendMessage(content.trim(), activeThreadId, role || 'default');
       
       // Create a bot message from the API response
       const botMessage: Message = {
-        id: uuidv4(),
+        id: uuidv4(), // Will be replaced when we reload the thread
         role: "bot",
         content: data.explanation || "Sorry, I couldn't process your request.",
         timestamp: new Date(),
@@ -144,11 +195,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         inputType: data.input_type,
         sessionId: data.session_id // Store the session ID from the API
       };
-      
-      // If the API returns a session_id, update the thread with it
-      if (data.session_id && data.session_id !== activeThreadId) {
-        console.log(`API returned session_id: ${data.session_id}`);
-      }
 
       // Update the thread with the bot message
       setThreads(prevThreads => 
@@ -162,6 +208,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             : thread
         )
       );
+      
+      // Optionally, reload the thread to ensure consistency with the server
+      // This step is not strictly necessary but ensures we have the server's message IDs
+      await selectThread(activeThreadId);
     } catch (error) {
       console.error("Error sending message:", error);
       
@@ -189,26 +239,66 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const selectThread = (threadId: string) => {
-    setActiveThreadId(threadId);
+  const selectThread = async (threadId: string) => {
+    setIsLoading(true);
+    try {
+      const threadData = await chatApi.getThread(threadId);
+      
+      // Process messages and update thread
+      const messages = threadData.messages.map((msg: any) => ({
+        id: msg.id,
+        role: msg.role,
+        content: msg.content,
+        timestamp: new Date(msg.timestamp),
+        apiRole: msg.apiRole,
+        suggestions: msg.suggestions,
+        summary: msg.summary,
+        needClarify: msg.needClarify,
+        inputType: msg.inputType
+      }));
+      
+      // Update the thread with messages
+      setThreads(prevThreads => 
+        prevThreads.map(thread => 
+          thread.id === threadId 
+            ? { ...thread, messages } 
+            : thread
+        )
+      );
+      
+      setActiveThreadId(threadId);
+    } catch (error) {
+      console.error("Error loading thread:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const renameThread = (threadId: string, newName: string) => {
+  const renameThread = async (threadId: string, newName: string) => {
     if (!newName.trim()) return;
 
-    setThreads(prevThreads => 
-      prevThreads.map(thread => 
-        thread.id === threadId 
-          ? { ...thread, name: newName.trim() }
-          : thread
-      )
-    );
+    try {
+      // Update on API
+      await chatApi.renameThread(threadId, newName.trim());
+      
+      // Update local state
+      setThreads(prevThreads => 
+        prevThreads.map(thread => 
+          thread.id === threadId 
+            ? { ...thread, name: newName.trim() }
+            : thread
+        )
+      );
+    } catch (error) {
+      console.error("Error renaming thread:", error);
+      throw error;
+    }
   };
 
   // Function to send a suggested question as a new message
-  const sendSuggestion = (suggestion: string) => {
+  const sendSuggestion = async (suggestion: string) => {
     if (suggestion.trim()) {
-      sendMessage(suggestion.trim());
+      await sendMessage(suggestion.trim());
     }
   };
 

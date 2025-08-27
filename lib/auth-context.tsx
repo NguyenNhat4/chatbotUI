@@ -33,7 +33,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch('https://denti-chatbot.hiaivn.com/api/auth/login', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,22 +49,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
 
-      const userData = await response.json();
+      const responseData = await response.json();
       
-      // Validate that the userData has the expected shape
-      if (!userData || typeof userData !== 'object' || !('email' in userData)) {
+      // Validate that the responseData has the expected shape
+      if (!responseData || typeof responseData !== 'object' || !responseData.access_token || !responseData.user) {
         return {
           success: false,
           error: 'Invalid response format from server'
         };
       }
       
-      // Store user in state, localStorage, and a cookie
+      // Extract the user data and token
+      const userData = responseData.user;
+      const token = responseData.access_token;
+      
+      // Store user in state
       setUser(userData);
+      
+      // Store user data and token in localStorage
       localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('authToken', token);
       
       // Set a cookie for server-side access (used by middleware)
       document.cookie = `user=${JSON.stringify(userData)}; path=/; max-age=${30 * 24 * 60 * 60}`;
+      document.cookie = `authToken=${token}; path=/; max-age=${30 * 24 * 60 * 60}`;
       
       return { success: true };
     } catch (error) {
@@ -76,10 +85,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
     
-    // Clear the cookie as well
+    // Clear localStorage
+    localStorage.removeItem('user');
+    localStorage.removeItem('authToken');
+    
+    // Clear cookies
     document.cookie = 'user=; path=/; max-age=0';
+    document.cookie = 'authToken=; path=/; max-age=0';
     
     // Use window.location for a full page refresh instead of router.push
     // This ensures the middleware properly handles the redirect

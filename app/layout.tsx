@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: "RHM Chatbot",
-  description: "A medical chatbot built with Next.js",
+  description: "A medical chatbot powered by HiAI Vietnam",
 };
 
 export default function RootLayout({
