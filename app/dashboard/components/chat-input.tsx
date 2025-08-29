@@ -18,13 +18,15 @@ interface ChatInputProps {
   setInputMessage: (message: string) => void;
   handleSendMessage: (e: React.FormEvent, selectedRole?: string) => void;
   isLoading: boolean;
+  onRoleChange?: (roleId: string) => void;
 }
 
 export function ChatInput({ 
   inputMessage, 
   setInputMessage, 
   handleSendMessage, 
-  isLoading 
+  isLoading,
+  onRoleChange 
 }: ChatInputProps) {
   const [deepResearch, setDeepResearch] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -83,7 +85,13 @@ export function ChatInput({
             <div className="flex items-center">
               <Select
                 value={selectedRole}
-                onValueChange={setSelectedRole}
+                onValueChange={(value) => {
+                  setSelectedRole(value);
+                  // Notify parent component about role change if callback exists
+                  if (onRoleChange) {
+                    onRoleChange(value);
+                  }
+                }}
                 disabled={isLoading || rolesLoading}
               >
                 <SelectTrigger 

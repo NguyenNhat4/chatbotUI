@@ -17,6 +17,7 @@ interface ChatContextType {
   renameThread: (threadId: string, newName: string) => Promise<void>;
   activeThread: Thread | null;
   isLoading: boolean;
+  isMessageLoading: boolean;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -25,6 +26,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMessageLoading, setIsMessageLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const { user } = useAuth();
 
@@ -93,8 +95,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
   const createThread = async (name: string) => {
     try {
-      setIsLoading(true);
-      
       // Create thread via API
       const response = await chatApi.createThread(name);
       
@@ -105,7 +105,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         messages: [{
           id: uuidv4(), // This will be replaced when we load the actual thread
           role: "bot",
-          content: "Xin chào! Tôi là phụ tá AI thông minh của bạn đây. Xem tôi có thể giúp gì được nào?",
+          content: "Xin chào! Tôi là trợ lý AI của bạn. Rất vui được hỗ trợ bạn - Bạn cần tôi giúp gì hôm nay?",
           timestamp: new Date()
         }],
         createdAt: new Date(response.createdAt),
@@ -123,8 +123,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error("Error creating thread:", error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -152,7 +150,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   };
 
   const sendMessage = async (content: string, role?: string) => {
-    if (!activeThreadId || !content.trim() || isLoading) return;
+    if (!activeThreadId || !content.trim() || isMessageLoading) return;
 
     // Create temporary user message for optimistic UI update
     const tempUserMessageId = uuidv4();
@@ -177,7 +175,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       )
     );
 
-    setIsLoading(true);
+    setIsMessageLoading(true);
 
     try {
       // Use the chat API client to send the message
@@ -235,12 +233,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         )
       );
     } finally {
-      setIsLoading(false);
+      setIsMessageLoading(false);
     }
   };
 
   const selectThread = async (threadId: string) => {
-    setIsLoading(true);
     try {
       const threadData = await chatApi.getThread(threadId);
       
@@ -269,8 +266,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setActiveThreadId(threadId);
     } catch (error) {
       console.error("Error loading thread:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -313,7 +308,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       selectThread,
       renameThread,
       activeThread,
-      isLoading
+      isLoading,
+      isMessageLoading
     }}>
       {children}
     </ChatContext.Provider>

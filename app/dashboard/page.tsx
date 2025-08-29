@@ -41,9 +41,10 @@ export default function Dashboard() {
     <div className="flex flex-col flex-1 w-full min-h-screen">
       {/* Header component */}
       <Header 
-        username={user?.email?.split('@')[0] || "User"} 
+        username={"Tôn Thất Tùng"} 
         handleSignOut={handleSignOut} 
       />
+      {/* Original code: username={user?.email?.split('@')[0] || "User"} */}
 
       {/* Chat component */}
       <Chat />

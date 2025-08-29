@@ -36,9 +36,16 @@ export function NavUser() {
   const { isMobile } = useSidebar()
   
   // Fallback user data if auth context is not available
+  // const userData = {
+  //   name: user?.email?.split('@')[0] || "User",
+  //   email: user?.email || "user@example.com",
+  //   avatar: "https://github.com/shadcn.png"
+  // }
+  
+  // Fixed user data with name "Tôn Thất Tùng"
   const userData = {
-    name: user?.email?.split('@')[0] || "User",
-    email: user?.email || "user@example.com",
+    name: "Tôn Thất Tùng",
+    email: "tungtt@example.com",
     avatar: "https://github.com/shadcn.png"
   }
 

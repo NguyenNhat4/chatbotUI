@@ -11,17 +11,19 @@ export function Chat() {
   const { 
     activeThread, 
     isLoading, 
+    isMessageLoading, 
     sendMessage,
     createThread 
   } = useChat();
   
   const [inputMessage, setInputMessage] = useState("");
+  const [selectedRole, setSelectedRole] = useState<string>("doctor_dental"); // Default role
 
   // Function to handle sending a message
   async function handleSendMessage(e: React.FormEvent, selectedRole?: string) {
     e.preventDefault();
     
-    if (!inputMessage.trim() || isLoading) return;
+    if (!inputMessage.trim() || isMessageLoading) return;
 
     // If there's no active thread, create a new one with the first message as the name
     if (!activeThread) {
@@ -40,7 +42,8 @@ export function Chat() {
             {/* Chat messages component */}
             <ChatMessages 
               messages={activeThread.messages} 
-              isLoading={isLoading} 
+              isLoading={isMessageLoading}  // Only show loading when sending messages
+              selectedRole={selectedRole}
             />
 
             {/* Chat input component - positioned at the bottom */}
@@ -49,7 +52,8 @@ export function Chat() {
                 inputMessage={inputMessage}
                 setInputMessage={setInputMessage}
                 handleSendMessage={handleSendMessage}
-                isLoading={isLoading}
+                isLoading={isMessageLoading}
+                onRoleChange={setSelectedRole}
               />
             </div>
           </>

@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  Edit,
   Folder,
   Forward,
   MoreHorizontal,
@@ -30,7 +31,7 @@ import {
 
 export function NavThreads() {
   const { isMobile } = useSidebar();
-  const { threads, selectThread, deleteThread, activeThreadId, createThread } = useChat();
+  const { threads, selectThread, deleteThread, renameThread, activeThreadId, createThread } = useChat();
   
   // Function to handle sharing thread
   const handleShareThread = (threadId: string) => {
@@ -39,6 +40,17 @@ export function NavThreads() {
     const shareUrl = `${window.location.origin}/share/${threadId}`;
     navigator.clipboard.writeText(shareUrl);
     alert(`Link đã được sao chép: ${shareUrl}`);
+  };
+  
+  // Function to handle rename thread
+  const handleRenameThread = (threadId: string) => {
+    const thread = threads.find(t => t.id === threadId);
+    if (!thread) return;
+    
+    const newName = window.prompt("Nhập tên mới cho đoạn chat:", thread.name);
+    if (newName && newName.trim() !== "" && newName !== thread.name) {
+      renameThread(threadId, newName);
+    }
   };
 
   return (
@@ -73,6 +85,10 @@ export function NavThreads() {
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
+                <DropdownMenuItem onClick={() => handleRenameThread(thread.id)}>
+                  <Edit className="text-muted-foreground" />
+                  <span>Đổi tên đoạn chat</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => selectThread(thread.id)}>
                   <Folder className="text-muted-foreground" />
                   <span>Xem đoạn chat</span>
