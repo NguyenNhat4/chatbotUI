@@ -8,9 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import bgRang from "@/assets/bg-rang.jpeg";
 import bgNoitiet from "@/assets/bg-noitiet.jpeg";
-import demoChat1 from "@/assets/demo-chat1.jpg";
-import demoChat2 from "@/assets/demochat2.jpg";
-import Image from "next/image";
+import { ThinkingAnimation } from "@/components/ui/thinking-animation";
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -91,30 +89,17 @@ export function ChatMessages({ messages, isLoading, selectedRole }: ChatMessages
                   <ReactMarkdown 
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      h2: ({node, ...props}) => <h2 className="text-2xl font-bold mt-4 mb-3 text-primary dark:text-primary" {...props} />,
-                      h3: ({node, ...props}) => <h3 className="text-xl font-bold mt-3 mb-2 text-primary dark:text-primary" {...props} />,
-                      p: ({node, ...props}) => <p className="text-lg mb-3 leading-relaxed text-justify" {...props} />,
-                      strong: ({node, ...props}) => <strong className="font-bold text-primary dark:text-blue-300 text-lg" {...props} />,
-                      ul: ({node, ...props}) => <ul className="list-disc ml-6 mb-3" {...props} />,
-                      ol: ({node, ...props}) => <ol className="list-decimal ml-6 mb-3" {...props} />,
-                      li: ({node, ...props}) => <li className="text-lg mb-1" {...props} />,
+                      h2: (props) => <h2 className="text-2xl font-bold mt-4 mb-3 text-primary dark:text-primary" {...props} />,
+                      h3: (props) => <h3 className="text-xl font-bold mt-3 mb-2 text-primary dark:text-primary" {...props} />,
+                      p: (props) => <p className="text-lg mb-3 leading-relaxed text-justify" {...props} />,
+                      strong: (props) => <strong className="font-bold text-primary dark:text-blue-300 text-lg" {...props} />,
+                      ul: (props) => <ul className="list-disc ml-6 mb-3" {...props} />,
+                      ol: (props) => <ol className="list-decimal ml-6 mb-3" {...props} />,
+                      li: (props) => <li className="text-lg mb-1" {...props} />,
                     }}
                   >
                     {processContent(message.content)}
                   </ReactMarkdown>
-                  
-                  {/* Thêm hình ảnh sau mỗi câu trả lời của bot, trừ câu chào đầu tiên */}
-                  {message.content !== "Xin chào! Tôi là trợ lý AI của bạn. Rất vui được hỗ trợ bạn - Bạn cần tôi giúp gì hôm nay?" && (
-                    <div className="mt-3">
-                      <Image 
-                        src={demoChat2} 
-                        alt="Hình ảnh minh họa" 
-                        width={400} 
-                        height={300}
-                        className="rounded-lg shadow-md" 
-                      />
-                    </div>
-                  )}
                 </div>
               )}
               
@@ -156,8 +141,21 @@ export function ChatMessages({ messages, isLoading, selectedRole }: ChatMessages
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-lg bg-secondary/80 px-4 py-2 text-secondary-foreground">
-              <p>Đang suy nghĩ...</p>
+            <div className="max-w-[80%] rounded-lg bg-secondary/80 px-4 py-3 text-secondary-foreground shimmer">
+              {/* Bạn có thể chọn một trong các hiệu ứng sau: */}
+              
+              {/* Hiệu ứng cơ bản với dots bouncing */}
+              <ThinkingAnimation variant="dots" text="Đang suy nghĩ" />
+              
+              {/* Các tùy chọn khác (uncomment để thử): */}
+              {/* <ThinkingAnimation variant="pulse" text="Đang xử lý" /> */}
+              {/* <ThinkingAnimation variant="wave" text="Đang phân tích" /> */}
+              {/* <ThinkingAnimation variant="typing" text="Đang soạn câu trả lời" /> */}
+              {/* <ThinkingAnimation variant="brain" text="Đang suy nghĩ" /> */}
+              {/* <ThinkingAnimation variant="spinner" text="Đang tải" /> */}
+              
+              {/* Hiệu ứng cao cấp với brain và particles */}
+              {/* <AdvancedThinkingAnimation text="AI đang phân tích câu hỏi của bạn" /> */}
             </div>
           </div>
         )}
