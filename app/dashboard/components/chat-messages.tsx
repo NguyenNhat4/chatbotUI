@@ -116,7 +116,7 @@ export function ChatMessages({ messages, isLoading, selectedRole }: ChatMessages
             {/* Show suggestions if available */}
             {message.role === "bot" && message.suggestions && message.suggestions.length > 0 && (
               <div className="mt-2 self-start">
-                <p className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Gợi ý câu hỏi:</p>
+                <p className="text-sm font-semibold mb-1 text-gray-900 dark:text-gray-100">Gợi ý câu hỏi:</p>
                 <div className="flex flex-wrap gap-2">
                   {message.suggestions.map((suggestion, index) => (
                     <button
