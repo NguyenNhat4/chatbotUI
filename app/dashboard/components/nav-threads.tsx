@@ -6,10 +6,8 @@ import {
   Forward,
   MoreHorizontal,
   Trash2,
-  type LucideIcon,
 } from "lucide-react"
 import { format } from "date-fns"
-import { Thread } from "@/types/chat"
 import { useChat } from "@/lib/chat-context"
 
 import {
@@ -69,7 +67,18 @@ export function NavThreads() {
               }}>
                 <span className="truncate">{thread.name}</span>
                 <span className="text-xs text-sidebar-foreground/70 ml-auto">
-                  {format(new Date(thread.updatedAt), 'dd/MM')}
+                  {(() => {
+                    try {
+                      if (!thread.updatedAt) return '';
+                      const date = thread.updatedAt instanceof Date 
+                        ? thread.updatedAt 
+                        : new Date(thread.updatedAt);
+                      return isNaN(date.getTime()) ? '' : format(date, 'dd/MM');
+                    } catch (error) {
+                      console.warn('Error formatting date for thread:', thread.id, error);
+                      return '';
+                    }
+                  })()}
                 </span>
               </a>
             </SidebarMenuButton>

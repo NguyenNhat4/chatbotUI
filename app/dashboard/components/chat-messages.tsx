@@ -44,7 +44,7 @@ export function ChatMessages({ messages, isLoading, selectedRole }: ChatMessages
   // Process markdown content to enhance formatting
   const processContent = (content: string) => {
     // Convert ### headers to proper Markdown headers with special formatting
-    let processedContent = content.replace(/###\s+(.*?)$/gm, '## $1');
+    const processedContent = content.replace(/###\s+(.*?)$/gm, '## $1');
     
     // Ensure all bold text (**text**) is preserved
     // ReactMarkdown will handle this automatically

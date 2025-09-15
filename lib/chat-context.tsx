@@ -25,9 +25,8 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined);
 export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
   const { user } = useAuth();
 
   // On first load, fetch threads from API
@@ -36,12 +35,17 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       try {
         const threadsData = await chatApi.getThreads();
         
-        // Convert dates
-        const processedThreads = threadsData.map((thread: any) => ({
+        // Convert dates with safe handling
+        const processedThreads = threadsData.map((thread: {
+          id: string;
+          name: string;
+          createdAt?: string | Date;
+          updatedAt?: string | Date;
+        }) => ({
           id: thread.id,
           name: thread.name,
-          createdAt: new Date(thread.createdAt),
-          updatedAt: new Date(thread.updatedAt),
+          createdAt: thread.createdAt ? new Date(thread.createdAt) : new Date(),
+          updatedAt: thread.updatedAt ? new Date(thread.updatedAt) : new Date(),
           messages: [], // We'll load messages when selecting a thread
           userId: user?.id?.toString() || "guest-user" // Get user ID from auth context
         }));
@@ -57,7 +61,17 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           const threadData = await chatApi.getThread(mostRecentThreadId);
           
           // Process messages
-          const messages = threadData.messages.map((msg: any) => ({
+          const messages = threadData.messages.map((msg: {
+            id: string;
+            role: string;
+            content: string;
+            timestamp: string | Date;
+            apiRole?: string;
+            suggestions?: string[];
+            summary?: string;
+            needClarify?: boolean;
+            inputType?: string;
+          }) => ({
             id: msg.id,
             role: msg.role,
             content: msg.content,
@@ -79,15 +93,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           );
         }
         
-        setIsInitialized(true);
       } catch (error) {
         console.error("Failed to load chat threads:", error);
-        setIsInitialized(true);
       }
     };
     
     fetchThreads();
-  }, []);
+  }, [user?.id]);
 
   const activeThread = activeThreadId 
     ? threads.find(thread => thread.id === activeThreadId) || null
@@ -108,8 +120,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           content: "Xin chào! Tôi là trợ lý AI của bạn. Rất vui được hỗ trợ bạn - Bạn cần tôi giúp gì hôm nay?",
           timestamp: new Date()
         }],
-        createdAt: new Date(response.createdAt),
-        updatedAt: new Date(response.updatedAt),
+        createdAt: response.createdAt ? new Date(response.createdAt) : new Date(),
+        updatedAt: response.updatedAt ? new Date(response.updatedAt) : new Date(),
         userId: user?.id?.toString() || "guest-user" // Get user ID from auth context
       };
       
@@ -242,7 +254,17 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const threadData = await chatApi.getThread(threadId);
       
       // Process messages and update thread
-      const messages = threadData.messages.map((msg: any) => ({
+      const messages = threadData.messages.map((msg: {
+        id: string;
+        role: string;
+        content: string;
+        timestamp: string | Date;
+        apiRole?: string;
+        suggestions?: string[];
+        summary?: string;
+        needClarify?: boolean;
+        inputType?: string;
+      }) => ({
         id: msg.id,
         role: msg.role,
         content: msg.content,
