@@ -16,7 +16,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     // Check if user is logged in on mount
@@ -24,7 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
-      } catch (e) {
+      } catch {
         localStorage.removeItem('user');
       }
     }
@@ -75,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       document.cookie = `authToken=${token}; path=/; max-age=${30 * 24 * 60 * 60}`;
       
       return { success: true };
-    } catch (error) {
+    } catch {
       return { 
         success: false, 
         error: 'An error occurred during login. Please try again.' 

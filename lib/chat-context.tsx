@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { Message, Thread } from "@/types/chat";
 import { v4 as uuidv4 } from "uuid";
 import chatApi from "./chat-api";
@@ -27,6 +27,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [isLoading] = useState(false);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
+  const [, setLoadingThreads] = useState<Set<string>>(new Set());
   const { user } = useAuth();
 
   // On first load, fetch threads from API
@@ -218,10 +219,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             : thread
         )
       );
-      
-      // Optionally, reload the thread to ensure consistency with the server
-      // This step is not strictly necessary but ensures we have the server's message IDs
-      await selectThread(activeThreadId);
     } catch (error) {
       console.error("Error sending message:", error);
       
@@ -249,8 +246,23 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const selectThread = async (threadId: string) => {
+  const selectThread = useCallback(async (threadId: string) => {
+    // Prevent multiple simultaneous requests for the same thread using state updater
+    let shouldProceed = false;
+    setLoadingThreads(prev => {
+      if (prev.has(threadId)) {
+        return prev; // Already loading, don't proceed
+      }
+      shouldProceed = true;
+      return new Set(prev).add(threadId);
+    });
+
+    if (!shouldProceed) {
+      return;
+    }
+
     try {
+      
       const threadData = await chatApi.getThread(threadId);
       
       // Process messages and update thread
@@ -288,8 +300,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setActiveThreadId(threadId);
     } catch (error) {
       console.error("Error loading thread:", error);
+    } finally {
+      setLoadingThreads(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(threadId);
+        return newSet;
+      });
     }
-  };
+  }, []); // Remove loadingThreads dependency to prevent infinite loop
 
   const renameThread = async (threadId: string, newName: string) => {
     if (!newName.trim()) return;

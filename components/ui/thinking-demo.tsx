@@ -6,7 +6,7 @@ import { ThinkingAnimation, AdvancedThinkingAnimation } from "./thinking-animati
 export function ThinkingDemo() {
   return (
     <div className="p-6 space-y-6 bg-white dark:bg-gray-900 rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Các hiệu ứng "Đang suy nghĩ..." có sẵn</h2>
+      <h2 className="text-2xl font-bold mb-4">Các hiệu ứng &ldquo;Đang suy nghĩ...&rdquo; có sẵn</h2>
       
       <div className="grid gap-4">
         <div className="p-4 border rounded-lg bg-secondary/20">

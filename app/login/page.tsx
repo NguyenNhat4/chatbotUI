@@ -3,7 +3,6 @@
 import { FormEvent, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import Link from "next/link";
 
 export default function Login() {
   const router = useRouter();
