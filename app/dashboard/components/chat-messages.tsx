@@ -7,7 +7,6 @@ import { useChat } from "@/lib/chat-context";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import bgRang from "@/assets/bg-rang.jpeg";
-import bgNoitiet from "@/assets/bg-noitiet.jpeg";
 import { ThinkingAnimation } from "@/components/ui/thinking-animation";
 
 interface ChatMessagesProps {
@@ -22,14 +21,7 @@ export function ChatMessages({ messages, isLoading, selectedRole }: ChatMessages
   
   // Function to determine which background to use based on the selected role
   const getBackgroundImage = () => {
-    if (!selectedRole) return bgRang.src; // Default to bgRang if no role selected
-    
-    // If the role includes "dental" or "nha khoa", use bgRang
-    if (selectedRole.includes('dental') || selectedRole.includes('patient_dental')) {
-      return bgRang.src;
-    }
-    // For endocrine (nội tiết) or diabetes (đái tháo đường) roles, use bgNoitiet
-    return bgNoitiet.src;
+   return bgRang.src; 
   };
   
   // Scroll to bottom whenever messages change

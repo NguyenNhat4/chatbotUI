@@ -36,7 +36,7 @@ export function ChatInput({
   // Set default role to "Bác sĩ nha khoa" if available
   useEffect(() => {
     if (roles.length > 0 && !selectedRole) {
-      const dentistRole = roles.find(role => role.name === "Bác sĩ nha khoa");
+      const dentistRole = roles.find(role => role.name === "Bác sĩ chỉnh nha");
       if (dentistRole) {
         setSelectedRole(dentistRole.id);
       }
