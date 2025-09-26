@@ -206,15 +206,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className=" text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Image src={LogoKhoaRHM} alt="Logo Khoa RHM" className="size-8" />
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">ĐH Y Dược Tp Hồ Chí Minh</span>
-                  <span className="">Khoa Răng Hàm Mặt</span>
-                </div>
-              </a>
+              <div className="flex items-center justify-start py-3">
+           <Image 
+            src="/hiai-logo.png" 
+            alt="HIAI Logo" 
+            className="w-24 h-auto object-contain" 
+            width={96} 
+            height={96}
+          />
+        </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

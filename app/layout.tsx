@@ -8,7 +8,7 @@ import { ClientCookiesProvider } from "./components/ClientCookiesProvider";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "RHM Chatbot",
+  title: "Medical assisstant",
   description: "A medical chatbot powered by HiAI Vietnam",
 };
 
