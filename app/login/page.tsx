@@ -92,7 +92,7 @@ export default function Login() {
         </form>
 
         <p className="mt-4 text-center text-xs sm:text-sm text-gray-600">
-          Demo credentials: user1@example.com / password
+          Demo credentials: user1@example.com / string
         </p>
       </div>
     </div>
