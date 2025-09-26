@@ -41,7 +41,7 @@ export default function Login() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 px-4 sm:px-6">
       <div className="w-full max-w-md rounded-lg bg-white p-6 sm:p-8 shadow-lg">
         <div className="mb-6 text-center">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">RHM Chatbot</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Medical Assistant</h1>
           <p className="mt-2 text-sm sm:text-base text-gray-600">Đăng nhập vào tài khoản của bạn</p>
         </div>
 
