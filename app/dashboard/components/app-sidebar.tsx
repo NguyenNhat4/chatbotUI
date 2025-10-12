@@ -1,10 +1,7 @@
 "use client"
 
-import { Calendar, Home, Inbox, Search, Settings, User2, ChevronUp, MessageCircleMore } from "lucide-react"
+import { Calendar, Home, Inbox, Search, Settings, User2, ChevronUp, MessageCircleMore, Stethoscope, Bot, AudioWaveform, BookOpen, Command, Frame, Map, PieChart, Settings2, SquareTerminal } from "lucide-react"
 import { useChat } from "@/lib/chat-context"
-import Image from "next/image"
-import LogoKhoaRHM from "@/assets/logo-khoa-rhm.png"
-import HIAILogo from "@/assets/hiai-logo.png"
 
 import {
   Sidebar,
@@ -20,18 +17,6 @@ import {
 } from "@/components/ui/sidebar"
 import { NavThreads } from "@/app/dashboard/components/nav-threads";
 import { NavUser } from "@/app/dashboard/components/nav-user";
-
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
 
 
 // Menu items.
@@ -206,15 +191,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <div className="flex items-center justify-start py-3">
-           <Image 
-            src="/hiai-logo.png" 
-            alt="HIAI Logo" 
-            className="w-24 h-auto object-contain" 
-            width={96} 
-            height={96}
-          />
-        </div>
+              <div className="flex items-center gap-3 py-3 px-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <Stethoscope className="h-6 w-6" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
+                  <span className="font-semibold text-base">MedChat AI</span>
+                  <span className="text-xs text-muted-foreground">Medical Assistant</span>
+                </div>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -254,16 +239,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarFooter>
           <div className="flex justify-center items-center mt-2 text-xs text-sidebar-foreground/50 font-light italic group-data-[collapsible=icon]:hidden">
-            <div className="h-4 mr-1 relative">
-              <Image 
-                src={HIAILogo} 
-                alt="HIAI Logo" 
-                className="object-contain" 
-                width={24} 
-                height={16} 
-              />
-            </div>
-            <span>Powered by HiAI Vietnam</span>
+            <Bot className="h-4 w-4 mr-1" />
+            <span>AI Medical Assistant</span>
           </div>
           <NavUser />
       </SidebarFooter>
