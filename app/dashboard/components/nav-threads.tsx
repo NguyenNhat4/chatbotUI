@@ -9,7 +9,6 @@ import {
 } from "lucide-react"
 import { format } from "date-fns"
 import { useChat } from "@/lib/chat-context"
-import { useRouter } from "next/navigation"
 
 import {
   DropdownMenu,
@@ -31,7 +30,6 @@ import {
 export function NavThreads() {
   const { isMobile } = useSidebar();
   const { threads, selectThread, deleteThread, renameThread, activeThreadId, createThread } = useChat();
-  const router = useRouter();
   
   // Function to handle sharing thread
   const handleShareThread = (threadId: string) => {
@@ -60,27 +58,29 @@ export function NavThreads() {
         {threads.map((thread) => (
           <SidebarMenuItem key={thread.id}>
             <SidebarMenuButton 
+              asChild 
               isActive={activeThreadId === thread.id}
-              onClick={async () => {
-                await selectThread(thread.id);
-                router.push(`/dashboard/thread/${thread.id}`);
-              }}
             >
-              <span className="truncate">{thread.name}</span>
-              <span className="text-xs text-sidebar-foreground/70 ml-auto">
-                {(() => {
-                  try {
-                    if (!thread.updatedAt) return '';
-                    const date = thread.updatedAt instanceof Date 
-                      ? thread.updatedAt 
-                      : new Date(thread.updatedAt);
-                    return isNaN(date.getTime()) ? '' : format(date, 'dd/MM');
-                  } catch (error) {
-                    console.warn('Error formatting date for thread:', thread.id, error);
-                    return '';
-                  }
-                })()}
-              </span>
+              <a href={`/dashboard/thread/${thread.id}`} onClick={(e) => {
+                e.preventDefault();
+                selectThread(thread.id);
+              }}>
+                <span className="truncate">{thread.name}</span>
+                <span className="text-xs text-sidebar-foreground/70 ml-auto">
+                  {(() => {
+                    try {
+                      if (!thread.updatedAt) return '';
+                      const date = thread.updatedAt instanceof Date 
+                        ? thread.updatedAt 
+                        : new Date(thread.updatedAt);
+                      return isNaN(date.getTime()) ? '' : format(date, 'dd/MM');
+                    } catch (error) {
+                      console.warn('Error formatting date for thread:', thread.id, error);
+                      return '';
+                    }
+                  })()}
+                </span>
+              </a>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -98,10 +98,7 @@ export function NavThreads() {
                   <Edit className="text-muted-foreground" />
                   <span>Đổi tên đoạn chat</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={async () => {
-                  await selectThread(thread.id);
-                  router.push(`/dashboard/thread/${thread.id}`);
-                }}>
+                <DropdownMenuItem onClick={() => selectThread(thread.id)}>
                   <Folder className="text-muted-foreground" />
                   <span>Xem đoạn chat</span>
                 </DropdownMenuItem>
@@ -121,13 +118,10 @@ export function NavThreads() {
         <SidebarMenuItem>
           <SidebarMenuButton 
             className="text-sidebar-foreground/70"
-            onClick={async () => {
-              const newThreadId = await createThread("Cuộc trò chuyện mới");
-              router.push(`/dashboard/thread/${newThreadId}`);
-            }}
+            onClick={() => createThread("Cuộc trò chuyện mới")}
           >
             <MoreHorizontal className="text-sidebar-foreground/70" />
-            <span>Cuộc trò chuyện mới</span>
+            <span>Xem thêm</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
