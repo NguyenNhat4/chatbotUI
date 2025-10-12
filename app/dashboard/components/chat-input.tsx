@@ -16,7 +16,7 @@ import {
 interface ChatInputProps {
   inputMessage: string;
   setInputMessage: (message: string) => void;
-  handleSendMessage: (e: React.FormEvent, selectedRole?: string) => void;
+  handleSendMessage: (e: React.FormEvent, selectedRole?: string, deepResearch?: boolean) => void;
   isLoading: boolean;
   onRoleChange?: (roleId: string) => void;
 }
@@ -55,15 +55,15 @@ export function ChatInput({
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (inputMessage.trim() && !isLoading) {
-        handleSendMessage(e, selectedRole);
+        handleSendMessage(e, selectedRole, deepResearch);
       }
     }
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputMessage.trim() && !isLoading) {
-      handleSendMessage(e, selectedRole);
+      handleSendMessage(e, selectedRole, deepResearch);
     }
   };
 

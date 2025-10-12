@@ -11,7 +11,7 @@ interface ChatContextType {
   activeThreadId: string | null;
   createThread: (name: string) => Promise<string>; // Returns the thread ID as a Promise
   deleteThread: (threadId: string) => Promise<void>;
-  sendMessage: (content: string, role?: string) => Promise<void>;
+  sendMessage: (content: string, role?: string, deepResearch?: boolean) => Promise<void>;
   sendSuggestion: (suggestion: string) => Promise<void>;
   selectThread: (threadId: string) => Promise<void>;
   renameThread: (threadId: string, newName: string) => Promise<void>;
@@ -162,7 +162,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const sendMessage = async (content: string, role?: string) => {
+  const sendMessage = async (content: string, role?: string, deepResearch?: boolean) => {
     if (!activeThreadId || !content.trim() || isMessageLoading) return;
 
     // Create temporary user message for optimistic UI update
@@ -176,9 +176,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     };
 
     // Update the thread with the user message (optimistic update)
-    setThreads(prevThreads => 
-      prevThreads.map(thread => 
-        thread.id === activeThreadId 
+    setThreads(prevThreads =>
+      prevThreads.map(thread =>
+        thread.id === activeThreadId
           ? {
               ...thread,
               messages: [...thread.messages, userMessage],
@@ -192,8 +192,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
     try {
       // Use the chat API client to send the message
-      const data = await chatApi.sendMessage(content.trim(), activeThreadId, role || 'default');
-      
+      const data = await chatApi.sendMessage(content.trim(), activeThreadId, role || 'default', deepResearch);
+
       // Create a bot message from the API response
       const botMessage: Message = {
         id: uuidv4(), // Will be replaced when we reload the thread
@@ -208,9 +208,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       };
 
       // Update the thread with the bot message
-      setThreads(prevThreads => 
-        prevThreads.map(thread => 
-          thread.id === activeThreadId 
+      setThreads(prevThreads =>
+        prevThreads.map(thread =>
+          thread.id === activeThreadId
             ? {
                 ...thread,
                 messages: [...thread.messages, botMessage],
@@ -221,7 +221,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       );
     } catch (error) {
       console.error("Error sending message:", error);
-      
+
       // Add an error message to the thread
       const errorMessage: Message = {
         id: uuidv4(),
@@ -229,10 +229,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         content: "Sorry, there was an error processing your request. Please try again later.",
         timestamp: new Date(),
       };
-      
-      setThreads(prevThreads => 
-        prevThreads.map(thread => 
-          thread.id === activeThreadId 
+
+      setThreads(prevThreads =>
+        prevThreads.map(thread =>
+          thread.id === activeThreadId
             ? {
                 ...thread,
                 messages: [...thread.messages, errorMessage],

@@ -20,16 +20,14 @@ export default function NewChatPage() {
   }, []);
 
   const { user, logout } = useAuth();
-  // const username = user?.email?.split('@')[0] || "User";
-  const username = "Tôn Thất Tùng";
-  
+  const username = user?.email?.split('@')[0] || "User";
+
   return (
     <div className="flex flex-col h-screen">
-      <Header 
+      <Header
         username={username}
-        handleSignOut={() => logout()} 
+        handleSignOut={() => logout()}
       />
-      {/* Original code: username={user?.email?.split('@')[0] || "User"} */}
       <Chat />
     </div>
   );

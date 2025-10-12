@@ -8,8 +8,8 @@ import { ClientCookiesProvider } from "./components/ClientCookiesProvider";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Medical assisstant",
-  description: "A medical chatbot powered by HiAI Vietnam",
+  title: "Medical Assistant",
+  description: "AI-powered medical chatbot assistant",
 };
 
 export default function RootLayout({
