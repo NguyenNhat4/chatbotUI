@@ -40,11 +40,10 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col flex-1 w-full min-h-screen">
       {/* Header component */}
-      <Header 
-        username={"Tôn Thất Tùng"} 
-        handleSignOut={handleSignOut} 
+      <Header
+        username={user?.email?.split('@')[0] || "User"}
+        handleSignOut={handleSignOut}
       />
-      {/* Original code: username={user?.email?.split('@')[0] || "User"} */}
 
       {/* Chat component */}
       <Chat />

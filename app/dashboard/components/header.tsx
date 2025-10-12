@@ -29,8 +29,7 @@ export function Header({ username, handleSignOut }: HeaderProps) {
         </div>
         <div className="flex items-center space-x-2 md:space-x-4 ml-2">
           <span className="text-sm text-muted-foreground whitespace-nowrap hidden sm:inline">
-            {`Xin chào, Tôn Thất Tùng`}
-            {/* Original code: {`Xin chào, ${username || "User"}`} */}
+            {`Xin chào, ${username || "User"}`}
           </span>
           <button
             onClick={handleSignOut}

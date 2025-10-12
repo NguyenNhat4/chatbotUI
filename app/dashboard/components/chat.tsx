@@ -20,17 +20,17 @@ export function Chat() {
   const [selectedRole, setSelectedRole] = useState<string>("doctor_dental"); // Default role
 
   // Function to handle sending a message
-  async function handleSendMessage(e: React.FormEvent, selectedRole?: string) {
+  async function handleSendMessage(e: React.FormEvent, selectedRole?: string, deepResearch?: boolean) {
     e.preventDefault();
-    
+
     if (!inputMessage.trim() || isMessageLoading) return;
 
     // If there's no active thread, create a new one with the first message as the name
     if (!activeThread) {
       createThread(inputMessage.trim().substring(0, 30) + (inputMessage.length > 30 ? '...' : ''));
     }
-    
-    sendMessage(inputMessage, selectedRole);
+
+    sendMessage(inputMessage, selectedRole, deepResearch);
     setInputMessage("");
   }
 
