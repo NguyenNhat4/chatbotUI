@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Message } from "@/types/chat";
 import { format } from "date-fns";
 import { useChat } from "@/lib/chat-context";
@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import bgRang from "@/assets/bg-rang.jpeg";
 import { ThinkingAnimation } from "@/components/ui/thinking-animation";
+import { Copy, Check } from "lucide-react";
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -18,10 +19,22 @@ interface ChatMessagesProps {
 export function ChatMessages({ messages, isLoading, selectedRole }: ChatMessagesProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { sendSuggestion } = useChat();
-  
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
   // Function to determine which background to use based on the selected role
   const getBackgroundImage = () => {
-   return bgRang.src; 
+   return bgRang.src;
+  };
+
+  // Function to copy message content to clipboard
+  const copyToClipboard = async (content: string, messageId: string) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedId(messageId);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
   
   // Scroll to bottom whenever messages change
@@ -59,50 +72,64 @@ export function ChatMessages({ messages, isLoading, selectedRole }: ChatMessages
               message.role === "user" ? "justify-end" : "justify-start"
             } flex-col`}
           >
-            <div
-              className={`max-w-[85%] rounded-lg px-4 py-2 ${
-                message.role === "user"
-                  ? "bg-blue-500/80 dark:bg-primary/80 text-white dark:text-primary-foreground"
-                  : "bg-secondary/80 text-secondary-foreground"
-              } ${message.role === "user" ? "self-end" : "self-start"}`}
-            >
-              {/* Show summary at the top if available */}
-              {/* {message.role === "bot" && message.summary && (
-                <div className="font-semibold mb-2">{message.summary}</div>
-              )} */}
-              
-              {/* Display message content with enhanced Markdown formatting */}
-              {message.role === "user" ? (
-                <div className="whitespace-pre-line text-base text-justify">
-                  {message.content}
-                </div>
-              ) : (
-                <div className="markdown-content text-justify">
-                  <ReactMarkdown 
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      h2: (props) => <h2 className="text-2xl font-bold mt-4 mb-3 text-primary dark:text-primary" {...props} />,
-                      h3: (props) => <h3 className="text-xl font-bold mt-3 mb-2 text-primary dark:text-primary" {...props} />,
-                      p: (props) => <p className="text-lg mb-3 leading-relaxed text-justify" {...props} />,
-                      strong: (props) => <strong className="font-bold text-primary dark:text-blue-300 text-lg" {...props} />,
-                      ul: (props) => <ul className="list-disc ml-6 mb-3" {...props} />,
-                      ol: (props) => <ol className="list-decimal ml-6 mb-3" {...props} />,
-                      li: (props) => <li className="text-lg mb-1" {...props} />,
-                    }}
-                  >
-                    {processContent(message.content)}
-                  </ReactMarkdown>
-                </div>
-              )}
-              
-              {/* Display timestamp */}
-              <p className={`text-xs mt-1 ${
-                message.role === "user"
-                  ? "text-white/70 dark:text-primary-foreground/70"
-                  : "text-secondary-foreground/70"
-              }`}>
-                {format(new Date(message.timestamp), 'HH:mm')}
-              </p>
+            <div className="relative group">
+              <div
+                className={`max-w-[85%] rounded-lg px-4 py-2 ${
+                  message.role === "user"
+                    ? "bg-blue-500/80 dark:bg-primary/80 text-white dark:text-primary-foreground"
+                    : "bg-secondary/80 text-secondary-foreground"
+                } ${message.role === "user" ? "self-end" : "self-start"}`}
+              >
+                {/* Display message content with enhanced Markdown formatting */}
+                {message.role === "user" ? (
+                  <div className="whitespace-pre-line text-base text-justify">
+                    {message.content}
+                  </div>
+                ) : (
+                  <div className="markdown-content text-justify">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h2: (props) => <h2 className="text-2xl font-bold mt-4 mb-3 text-primary dark:text-primary" {...props} />,
+                        h3: (props) => <h3 className="text-xl font-bold mt-3 mb-2 text-primary dark:text-primary" {...props} />,
+                        p: (props) => <p className="text-lg mb-3 leading-relaxed text-justify" {...props} />,
+                        strong: (props) => <strong className="font-bold text-primary dark:text-blue-300 text-lg" {...props} />,
+                        ul: (props) => <ul className="list-disc ml-6 mb-3" {...props} />,
+                        ol: (props) => <ol className="list-decimal ml-6 mb-3" {...props} />,
+                        li: (props) => <li className="text-lg mb-1" {...props} />,
+                      }}
+                    >
+                      {processContent(message.content)}
+                    </ReactMarkdown>
+                  </div>
+                )}
+
+                {/* Display timestamp */}
+                <p className={`text-xs mt-1 ${
+                  message.role === "user"
+                    ? "text-white/70 dark:text-primary-foreground/70"
+                    : "text-secondary-foreground/70"
+                }`}>
+                  {format(new Date(message.timestamp), 'HH:mm')}
+                </p>
+              </div>
+
+              {/* Copy button - show on hover */}
+              <button
+                onClick={() => copyToClipboard(message.content, message.id)}
+                className={`absolute -top-2 ${message.role === "user" ? "-left-8" : "-right-8"} opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-md ${
+                  message.role === "user"
+                    ? "bg-blue-500 hover:bg-blue-600 text-white"
+                    : "bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
+                }`}
+                title="Copy message"
+              >
+                {copiedId === message.id ? (
+                  <Check className="w-3.5 h-3.5" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
+              </button>
             </div>
             
             {/* Show suggestions if available */}

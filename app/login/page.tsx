@@ -8,7 +8,7 @@ export default function Login() {
   const router = useRouter();
   const { login, user } = useAuth();
   const [email, setEmail] = useState("user1@example.com");
-  const [password, setPassword] = useState("password");
+  const [password, setPassword] = useState("string");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   
