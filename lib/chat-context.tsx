@@ -74,7 +74,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             inputType?: string;
           }) => ({
             id: msg.id,
-            role: msg.role,
+            role: msg.role as Message['role'],
             content: msg.content,
             timestamp: new Date(msg.timestamp),
             apiRole: msg.apiRole,
@@ -278,7 +278,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         inputType?: string;
       }) => ({
         id: msg.id,
-        role: msg.role,
+        role: msg.role as Message['role'],
         content: msg.content,
         timestamp: new Date(msg.timestamp),
         apiRole: msg.apiRole,

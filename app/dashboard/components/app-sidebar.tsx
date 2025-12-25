@@ -2,6 +2,7 @@
 
 import { Calendar, Home, Inbox, Search, Settings, User2, ChevronUp, MessageCircleMore, Stethoscope, Bot, AudioWaveform, BookOpen, Command, Frame, Map, PieChart, Settings2, SquareTerminal } from "lucide-react"
 import { useChat } from "@/lib/chat-context"
+import { useRouter } from "next/navigation"
 
 import {
   Sidebar,
@@ -178,11 +179,13 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Move the hook call to the top level of the component
   const { createThread } = useChat();
+  const router = useRouter();
 
   // Handler function defined at the component level
-  const handleNewChat = (e: React.MouseEvent) => {
+  const handleNewChat = async (e: React.MouseEvent) => {
     e.preventDefault();
-    createThread("Cuộc trò chuyện mới");
+    const threadId = await createThread("Cuộc trò chuyện mới");
+    router.push(`/dashboard/thread/${threadId}`);
   };
   
   return (
