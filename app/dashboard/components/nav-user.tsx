@@ -34,19 +34,12 @@ import {
 export function NavUser() {
   const { user, logout } = useAuth();
   const { isMobile } = useSidebar()
-  
-  // Fallback user data if auth context is not available
-  // const userData = {
-  //   name: user?.email?.split('@')[0] || "User",
-  //   email: user?.email || "user@example.com",
-  //   avatar: "https://github.com/shadcn.png"
-  // }
-  
-  // Fixed user data with name "Tôn Thất Tùng"
+
+  // Use actual user data from auth context
   const userData = {
-    name: "Tôn Thất Tùng",
-    email: "tungtt@example.com",
-    avatar: "https://github.com/shadcn.png"
+    name: user?.name || user?.email?.split('@')[0] || "User",
+    email: user?.email || "user@example.com",
+    avatar: user?.avatar || "https://github.com/shadcn.png"
   }
 
   // Generate initials from email (username part)

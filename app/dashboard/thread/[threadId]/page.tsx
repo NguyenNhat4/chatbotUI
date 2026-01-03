@@ -19,7 +19,7 @@ export default function ThreadPage({ params }: { params: Promise<{ threadId: str
   }, [threadId, activeThreadId, selectThread]);
 
   const { user, logout } = useAuth();
-  const username = user?.email?.split('@')[0] || "User";
+  const username = user?.name || user?.email || "User";
 
   return (
     <>

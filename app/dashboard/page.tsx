@@ -41,7 +41,7 @@ export default function Dashboard() {
     <>
       {/* Header component */}
       <Header
-        username={user?.email?.split('@')[0] || "User"}
+        username={user?.name || user?.email || "User"}
         handleSignOut={handleSignOut}
       />
 
