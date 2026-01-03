@@ -1,11 +1,9 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Send } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { useRoles } from "@/lib/roles-service";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -21,14 +19,13 @@ interface ChatInputProps {
   onRoleChange?: (roleId: string) => void;
 }
 
-export function ChatInput({ 
-  inputMessage, 
-  setInputMessage, 
-  handleSendMessage, 
+export function ChatInput({
+  inputMessage,
+  setInputMessage,
+  handleSendMessage,
   isLoading,
-  onRoleChange 
+  onRoleChange
 }: ChatInputProps) {
-  const [deepResearch, setDeepResearch] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { roles, selectedRole, setSelectedRole, isLoading: rolesLoading } = useRoles();
 
@@ -55,7 +52,7 @@ export function ChatInput({
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (inputMessage.trim() && !isLoading) {
-        handleSendMessage(e, selectedRole, deepResearch);
+        handleSendMessage(e, selectedRole);
       }
     }
   };
@@ -63,7 +60,7 @@ export function ChatInput({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputMessage.trim() && !isLoading) {
-      handleSendMessage(e, selectedRole, deepResearch);
+      handleSendMessage(e, selectedRole);
     }
   };
 
@@ -94,7 +91,7 @@ export function ChatInput({
                 }}
                 disabled={isLoading || rolesLoading}
               >
-                <SelectTrigger 
+                <SelectTrigger
                   className="w-[140px] h-8 text-xs border-gray-200 dark:border-gray-700 bg-transparent focus:ring-blue-500"
                   aria-label="Select role"
                 >
@@ -108,19 +105,6 @@ export function ChatInput({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            
-            {/* Deep research switch */}
-            <div className="flex items-center gap-2">
-              <Switch
-                id="deep-research"
-                checked={deepResearch}
-                onCheckedChange={setDeepResearch}
-                className="data-[state=checked]:bg-blue-600"
-              />
-              <Label htmlFor="deep-research" className="text-gray-600 dark:text-gray-300 font-medium cursor-pointer text-sm">
-                Deep Research
-              </Label>
             </div>
           </div>
 
