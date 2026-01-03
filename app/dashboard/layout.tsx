@@ -28,8 +28,12 @@ export default function DashboardLayout({
   return (
     <SidebarProvider defaultOpen={true}>
       <ChatProvider>
-        <AppSidebar />
-        {children}
+        <div className="flex min-h-screen w-full">
+          <AppSidebar />
+          <div className="flex-1 flex flex-col w-full overflow-hidden">
+            {children}
+          </div>
+        </div>
       </ChatProvider>
     </SidebarProvider>
   )

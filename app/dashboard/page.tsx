@@ -38,7 +38,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex flex-col flex-1 w-full min-h-screen">
+    <>
       {/* Header component */}
       <Header
         username={user?.email?.split('@')[0] || "User"}
@@ -47,6 +47,6 @@ export default function Dashboard() {
 
       {/* Chat component */}
       <Chat />
-    </div>
+    </>
   );
 }

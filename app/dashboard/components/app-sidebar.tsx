@@ -184,8 +184,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Handler function defined at the component level
   const handleNewChat = async (e: React.MouseEvent) => {
     e.preventDefault();
-    const threadId = await createThread("Cuộc trò chuyện mới");
-    router.push(`/dashboard/thread/${threadId}`);
+    try {
+      const threadId = await createThread("Cuộc trò chuyện mới");
+      // Use push to navigate to the new thread
+      router.push(`/dashboard/thread/${threadId}`);
+    } catch (error) {
+      console.error("Failed to create new chat:", error);
+    }
   };
   
   return (

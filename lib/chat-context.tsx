@@ -110,29 +110,48 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     try {
       // Create thread via API
       const response = await chatApi.createThread(name);
-      
-      // Create thread object with initial welcome message
+
+      // Load the complete thread with messages from API
+      const threadData = await chatApi.getThread(response.id);
+
+      // Process messages
+      const messages = threadData.messages.map((msg: {
+        id: string;
+        role: string;
+        content: string;
+        timestamp: string | Date;
+        apiRole?: string;
+        suggestions?: string[];
+        summary?: string;
+        needClarify?: boolean;
+        inputType?: string;
+      }) => ({
+        id: msg.id,
+        role: msg.role as Message['role'],
+        content: msg.content,
+        timestamp: new Date(msg.timestamp),
+        apiRole: msg.apiRole,
+        suggestions: msg.suggestions,
+        summary: msg.summary,
+        needClarify: msg.needClarify,
+        inputType: msg.inputType
+      }));
+
+      // Create thread object with loaded messages
       const newThread: Thread = {
         id: response.id,
         name,
-        messages: [{
-          id: uuidv4(), // This will be replaced when we load the actual thread
-          role: "bot",
-          content: "Xin chào! Tôi là trợ lý AI của bạn. Rất vui được hỗ trợ bạn - Bạn cần tôi giúp gì hôm nay?",
-          timestamp: new Date()
-        }],
+        messages,
         createdAt: response.createdAt ? new Date(response.createdAt) : new Date(),
         updatedAt: response.updatedAt ? new Date(response.updatedAt) : new Date(),
-        userId: user?.id?.toString() || "guest-user" // Get user ID from auth context
+        userId: user?.id?.toString() || "guest-user"
       };
-      
-      // Update local state
+
+      // Update local state and set as active immediately
       setThreads(prevThreads => [newThread, ...prevThreads]);
-      
-      // Load the complete thread with messages
-      await selectThread(newThread.id);
-      
-      return newThread.id;
+      setActiveThreadId(response.id);
+
+      return response.id;
     } catch (error) {
       console.error("Error creating thread:", error);
       throw error;
@@ -247,6 +266,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   };
 
   const selectThread = useCallback(async (threadId: string) => {
+    // Set active immediately for better UX
+    setActiveThreadId(threadId);
+
     // Prevent multiple simultaneous requests for the same thread using state updater
     let shouldProceed = false;
     setLoadingThreads(prev => {
@@ -262,9 +284,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      
       const threadData = await chatApi.getThread(threadId);
-      
+
       // Process messages and update thread
       const messages = threadData.messages.map((msg: {
         id: string;
@@ -287,17 +308,15 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         needClarify: msg.needClarify,
         inputType: msg.inputType
       }));
-      
+
       // Update the thread with messages
-      setThreads(prevThreads => 
-        prevThreads.map(thread => 
-          thread.id === threadId 
-            ? { ...thread, messages } 
+      setThreads(prevThreads =>
+        prevThreads.map(thread =>
+          thread.id === threadId
+            ? { ...thread, messages }
             : thread
         )
       );
-      
-      setActiveThreadId(threadId);
     } catch (error) {
       console.error("Error loading thread:", error);
     } finally {

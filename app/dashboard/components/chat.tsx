@@ -6,16 +6,18 @@ import { ChatInput } from "@/app/dashboard/components/chat-input";
 import { useChat } from "@/lib/chat-context";
 import { Button } from "@/components/ui/button";
 import { MessageCircleMore } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function Chat() {
-  const { 
-    activeThread, 
-    isLoading, 
-    isMessageLoading, 
+  const {
+    activeThread,
+    isLoading,
+    isMessageLoading,
     sendMessage,
-    createThread 
+    createThread
   } = useChat();
-  
+  const router = useRouter();
+
   const [inputMessage, setInputMessage] = useState("");
   const [selectedRole, setSelectedRole] = useState<string>("doctor_dental"); // Default role
 
@@ -27,7 +29,17 @@ export function Chat() {
 
     // If there's no active thread, create a new one with the first message as the name
     if (!activeThread) {
-      createThread(inputMessage.trim().substring(0, 30) + (inputMessage.length > 30 ? '...' : ''));
+      try {
+        const threadId = await createThread(inputMessage.trim().substring(0, 30) + (inputMessage.length > 30 ? '...' : ''));
+        router.push(`/dashboard/thread/${threadId}`);
+        // The sendMessage will be called after the thread is created and selected
+        sendMessage(inputMessage, selectedRole, deepResearch);
+        setInputMessage("");
+        return;
+      } catch (error) {
+        console.error("Failed to create thread:", error);
+        return;
+      }
     }
 
     sendMessage(inputMessage, selectedRole, deepResearch);
@@ -35,8 +47,8 @@ export function Chat() {
   }
 
   return (
-    <div className="flex-1">
-      <main className="mx-auto flex flex-col h-[calc(100vh-4.5rem)] max-w-4xl p-4 relative">
+    <div className="flex-1 flex justify-center w-full">
+      <main className="flex flex-col h-[calc(100vh-4.5rem)] max-w-4xl w-full p-4 relative">
         {activeThread ? (
           <>
             {/* Chat messages component */}
@@ -65,8 +77,15 @@ export function Chat() {
             <p className="text-muted-foreground mb-6 max-w-md">
               Bắt đầu cuộc trò chuyện mới để nhận trợ giúp y tế từ trợ lý AI của chúng tôi.
             </p>
-            <Button 
-              onClick={() => createThread("Cuộc trò chuyện mới")}
+            <Button
+              onClick={async () => {
+                try {
+                  const threadId = await createThread("Cuộc trò chuyện mới");
+                  router.push(`/dashboard/thread/${threadId}`);
+                } catch (error) {
+                  console.error("Failed to create new chat:", error);
+                }
+              }}
               className="flex items-center gap-2"
             >
               <MessageCircleMore size={18} />
